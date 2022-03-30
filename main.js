@@ -35,7 +35,7 @@ function handleInput(e) {
             break
     }
     
-    //other code
+    grid.cells.forEach(cell => cell.mergeTiles())
 
     setupInput()
 
@@ -50,11 +50,11 @@ function moveDown() {
 }
 
 function moveLeft() {
-    return slideTiles(grid.cellsByColumn)
+    return slideTiles(grid.cellsByRow)
 }
 
 function moveRight() {
-    return slideTiles(grid.cellsByColumn)
+    return slideTiles(grid.cellsByRow.map(row => [...row].reverse()))
 }
 
 function slideTiles(cells) {
