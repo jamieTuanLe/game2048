@@ -48,11 +48,10 @@ async function handleInput(e) {
             break
         default:
             setupInput()
-            break
+            return
     }
     
     grid.cells.forEach(cell => cell.mergeTiles())
-    console.log(123)
 
     const newTile = new Tile(gameBoard)
     grid.randomEmptyCell().tile = newTile
