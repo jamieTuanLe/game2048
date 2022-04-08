@@ -1,15 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title>Charm 2048 Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Game 2048</title>
     <script type="module" src="main.js"></script>
 </head>
+
 <body>
-    <div id="game-board"></div>
+    <header>
+        <div class="container">
+            <button class="how-to-play-btn">?</button>
+            <div class="logo">
+                <h5>2048 Game</h5>
+            </div>
+            <div class="score">
+                <p>Score</p>
+                <h5 id="number-score">0</h5>
+            </div>
+        </div>
+    </header>
+    <div class="game">
+        <div id="game-board"></div>
+    </div>
+    <div id="modal">
+        <div class="modal-container">
+            <div id="modal-close">X</div>
+            <div class="modal-score">
+                <h6>Statistics</h6>
+                <div class="body-modal-score">
+                    <div>
+                        <p>Current Score</p>
+                        <p id="current-score">0</p>
+                        <p>High Score</p>
+                        <p id="high-score">0</p>
+                    </div>
+                    <div>
+                        <h4> You Lose!</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-play-again">
+                <button id="play-again">Play Again</button>
+            </div>
+        </div>
+    </div>
 </body>
+
 </html>

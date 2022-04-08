@@ -3,44 +3,54 @@ import Grid from './Grid.js';
 import Tile from './Tile.js';
 
 const gameBoard = document.getElementById("game-board")
+const modal = document.getElementById('modal')
+const currentScore = document.getElementById('current-score')
+const score = document.getElementById('number-score')
+const modalClose = document.getElementById('modal-close')
+const playAgain = document.getElementById('play-again')
+const highScore = document.getElementById('high-score')
+
+var numberScore = 0
+var numberHighScore = 0
 
 const grid = new Grid(gameBoard)
-
-grid.randomEmptyCell().tile =  new Tile(gameBoard)
-grid.randomEmptyCell().tile =  new Tile(gameBoard)
+grid.randomEmptyCell().tile = new Tile(gameBoard)
+grid.randomEmptyCell().tile = new Tile(gameBoard)
 
 setupInput()
 
 function setupInput() {
     window.addEventListener("keydown", handleInput, { once: true })
+    modalClose.addEventListener("click", closeModal)
+    playAgain.addEventListener("click", handlePlayAgain)
 }
 
 
 async function handleInput(e) {
     switch (e.key) {
         case "ArrowUp":
-            if(!canMoveUp()) {
+            if (!canMoveUp()) {
                 setupInput()
                 return
             }
             await moveUp()
             break
         case "ArrowDown":
-            if(!canMoveDown()) {
+            if (!canMoveDown()) {
                 setupInput()
                 return
             }
             await moveDown()
             break
         case "ArrowLeft":
-            if(!canMoveLeft()) {
+            if (!canMoveLeft()) {
                 setupInput()
                 return
             }
             await moveLeft()
             break
         case "ArrowRight":
-            if(!canMoveRight()) {
+            if (!canMoveRight()) {
                 setupInput()
                 return
             }
@@ -50,19 +60,27 @@ async function handleInput(e) {
             setupInput()
             return
     }
-    
-    grid.cells.forEach(cell => cell.mergeTiles())
+
+    grid.cells.forEach(cell => {
+        let scoreMerge = cell.mergeTiles()
+        numberScore = scoreMerge ? scoreMerge + numberScore : numberScore
+        if(numberScore) score.textContent = numberScore.toString()
+
+    })
 
     const newTile = new Tile(gameBoard)
     grid.randomEmptyCell().tile = newTile
 
-    if( !canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight() ) {
+    if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
         newTile.waitForTransition(true).then(() => {
-            alert("You Lose")
+            currentScore.textContent = numberScore.toString()
+            numberHighScore = numberHighScore > numberScore ? numberHighScore : numberScore
+            highScore.textContent = numberHighScore.toString()
+            modal.classList.add('active')
         })
         return
     }
-    
+
     setupInput()
 
 }
@@ -85,30 +103,30 @@ function moveRight() {
 
 function slideTiles(cells) {
     return Promise.all(
-    cells.flatMap(group => {
-        const promises = []
-        for(let i = 1; i < group.length; i++) {
-            const cell = group[i]
-            if(cell.tile == null) continue
-            let lastValidCell
-            for(let j = i - 1; j >= 0; j--) {
-                const moveToCell = group[j]
-                if(!moveToCell.canAccept(cell.tile)) break
-                lastValidCell = moveToCell
-            }
-
-            if(lastValidCell != null) {
-                promises.push(cell.tile.waitForTransition())
-                if(lastValidCell.tile != null) {
-                    lastValidCell.mergeTile = cell.tile
-                }else {
-                    lastValidCell.tile = cell.tile
+        cells.flatMap(group => {
+            const promises = []
+            for (let i = 1; i < group.length; i++) {
+                const cell = group[i]
+                if (cell.tile == null) continue
+                let lastValidCell
+                for (let j = i - 1; j >= 0; j--) {
+                    const moveToCell = group[j]
+                    if (!moveToCell.canAccept(cell.tile)) break
+                    lastValidCell = moveToCell
                 }
-                cell.tile = null
+
+                if (lastValidCell != null) {
+                    promises.push(cell.tile.waitForTransition())
+                    if (lastValidCell.tile != null) {
+                        lastValidCell.mergeTile = cell.tile
+                    } else {
+                        lastValidCell.tile = cell.tile
+                    }
+                    cell.tile = null
+                }
             }
-        }
-        return promises
-    }))
+            return promises
+        }))
 }
 
 
@@ -131,10 +149,25 @@ function canMoveRight() {
 function canMove(cells) {
     return cells.some(group => {
         return group.some((cell, index) => {
-            if(index === 0) return false
-            if(cell.tile == null) return false
+            if (index === 0) return false
+            if (cell.tile == null) return false
             const moveToCell = group[index - 1]
             return moveToCell.canAccept(cell.tile)
         })
     })
+}
+
+
+function closeModal() {
+    modal.classList.remove('active')
+}
+
+function handlePlayAgain() {
+    grid.resetTile()
+    grid.randomEmptyCell().tile = new Tile(gameBoard)
+    grid.randomEmptyCell().tile = new Tile(gameBoard)
+    modal.classList.remove('active')
+    numberScore = 0
+    score.textContent = numberScore.toString()
+    setupInput()
 }
