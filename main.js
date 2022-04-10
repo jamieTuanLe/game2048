@@ -1,6 +1,7 @@
 
 import Grid from './Grid.js';
 import Tile from './Tile.js';
+import { moveUp, moveDown, moveLeft, moveRight, canMoveUp, canMoveDown, canMoveLeft, canMoveRight } from './Actions.js'
 
 const gameBoard = document.getElementById("game-board")
 const modal = document.getElementById('modal')
@@ -29,32 +30,32 @@ function setupInput() {
 async function handleInput(e) {
     switch (e.key) {
         case "ArrowUp":
-            if (!canMoveUp()) {
+            if (!canMoveUp(grid)) {
                 setupInput()
                 return
             }
-            await moveUp()
+            await moveUp(grid)
             break
         case "ArrowDown":
-            if (!canMoveDown()) {
+            if (!canMoveDown(grid)) {
                 setupInput()
                 return
             }
-            await moveDown()
+            await moveDown(grid)
             break
         case "ArrowLeft":
-            if (!canMoveLeft()) {
+            if (!canMoveLeft(grid)) {
                 setupInput()
                 return
             }
-            await moveLeft()
+            await moveLeft(grid)
             break
         case "ArrowRight":
-            if (!canMoveRight()) {
+            if (!canMoveRight(grid)) {
                 setupInput()
                 return
             }
-            await moveRight()
+            await moveRight(grid)
             break
         default:
             setupInput()
@@ -71,7 +72,7 @@ async function handleInput(e) {
     const newTile = new Tile(gameBoard)
     grid.randomEmptyCell().tile = newTile
 
-    if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
+    if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
         newTile.waitForTransition(true).then(() => {
             currentScore.textContent = numberScore.toString()
             numberHighScore = numberHighScore > numberScore ? numberHighScore : numberScore
@@ -84,79 +85,6 @@ async function handleInput(e) {
     setupInput()
 
 }
-
-function moveUp() {
-    return slideTiles(grid.cellsByColumn)
-}
-
-function moveDown() {
-    return slideTiles(grid.cellsByColumn.map(column => [...column].reverse()))
-}
-
-function moveLeft() {
-    return slideTiles(grid.cellsByRow)
-}
-
-function moveRight() {
-    return slideTiles(grid.cellsByRow.map(row => [...row].reverse()))
-}
-
-function slideTiles(cells) {
-    return Promise.all(
-        cells.flatMap(group => {
-            const promises = []
-            for (let i = 1; i < group.length; i++) {
-                const cell = group[i]
-                if (cell.tile == null) continue
-                let lastValidCell
-                for (let j = i - 1; j >= 0; j--) {
-                    const moveToCell = group[j]
-                    if (!moveToCell.canAccept(cell.tile)) break
-                    lastValidCell = moveToCell
-                }
-
-                if (lastValidCell != null) {
-                    promises.push(cell.tile.waitForTransition())
-                    if (lastValidCell.tile != null) {
-                        lastValidCell.mergeTile = cell.tile
-                    } else {
-                        lastValidCell.tile = cell.tile
-                    }
-                    cell.tile = null
-                }
-            }
-            return promises
-        }))
-}
-
-
-function canMoveUp() {
-    return canMove(grid.cellsByColumn)
-}
-
-function canMoveDown() {
-    return canMove(grid.cellsByColumn.map(column => [...column].reverse()))
-}
-
-function canMoveLeft() {
-    return canMove(grid.cellsByRow)
-}
-
-function canMoveRight() {
-    return canMove(grid.cellsByRow.map(row => [...row].reverse()))
-}
-
-function canMove(cells) {
-    return cells.some(group => {
-        return group.some((cell, index) => {
-            if (index === 0) return false
-            if (cell.tile == null) return false
-            const moveToCell = group[index - 1]
-            return moveToCell.canAccept(cell.tile)
-        })
-    })
-}
-
 
 function closeModal() {
     modal.classList.remove('active')
