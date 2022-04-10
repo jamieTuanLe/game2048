@@ -2,14 +2,13 @@
 import Grid from './Grid.js';
 import Tile from './Tile.js';
 import { moveUp, moveDown, moveLeft, moveRight, canMoveUp, canMoveDown, canMoveLeft, canMoveRight } from './Actions.js'
+import handleLose from './handleLose.js';
 
 const gameBoard = document.getElementById("game-board")
 const modal = document.getElementById('modal')
-const currentScore = document.getElementById('current-score')
 const score = document.getElementById('number-score')
 const modalClose = document.getElementById('modal-close')
 const playAgain = document.getElementById('play-again')
-const highScore = document.getElementById('high-score')
 
 var numberScore = 0
 var numberHighScore = 0
@@ -66,19 +65,13 @@ async function handleInput(e) {
         let scoreMerge = cell.mergeTiles()
         numberScore = scoreMerge ? scoreMerge + numberScore : numberScore
         if(numberScore) score.textContent = numberScore.toString()
-
     })
 
     const newTile = new Tile(gameBoard)
     grid.randomEmptyCell().tile = newTile
 
     if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
-        newTile.waitForTransition(true).then(() => {
-            currentScore.textContent = numberScore.toString()
-            numberHighScore = numberHighScore > numberScore ? numberHighScore : numberScore
-            highScore.textContent = numberHighScore.toString()
-            modal.classList.add('active')
-        })
+        newTile.waitForTransition(true).then(() => handleLose(numberScore, numberHighScore, modal))
         return
     }
 
