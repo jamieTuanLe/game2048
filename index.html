@@ -16,7 +16,7 @@
 <body>
     <header>
         <div class="container">
-            <button class="how-to-play-btn">?</button>
+            <button id="howtoplay-btn" class="how-to-play-btn">?</button>
             <div class="logo">
                 <h5>2048 Game</h5>
             </div>
@@ -29,9 +29,9 @@
     <div class="game">
         <div id="game-board"></div>
     </div>
-    <div id="modal">
+    <div id="modal-lose" class="modal">
         <div class="modal-container">
-            <div id="modal-close">X</div>
+            <div id="modal-close-lose" class="modal-close">X</div>
             <div class="modal-score">
                 <h6>Statistics</h6>
                 <div class="body-modal-score">
@@ -48,6 +48,21 @@
             </div>
             <div class="modal-play-again">
                 <button id="play-again">Play Again</button>
+            </div>
+        </div>
+    </div>
+    <div id="modal-howtoplay" class="modal">
+        <div class="modal-container">
+            <div id="modal-close-howtoplay" class="modal-close">X</div>
+            <div class="header-howtoplay">Hướng dẫn trò chơi</div>
+            <div class="des-howtoplay">
+                <p>Kết hợp các ô của cùng một số để tạo một ô có giá trị 2048.</p>
+                <p>Nhấn các phím mũi tên trên bàn phím hoặc vuốt lên xuống đối với điện thoại sẽ
+                    di chuyển tất cả các ô theo hướng của phím được nhấn / vuốt. Sau khi tất cả các ô di chuyển xong,
+                    một ô mới có giá trị là 2 hoặc 4 sẽ được tạo trong một ô trống ngẫu nhiên.</p>
+                <p>Hai ô có cùng số sẽ hợp nhất khi chúng va chạm để tạo ra một ô mới có giá trị
+                    gấp đôi.</p>
+                <p>Trò chơi kết thúc khi không có cách nào hợp lệ để bạn di chuyển các ô.</p>
             </div>
         </div>
     </div>

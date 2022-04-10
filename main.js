@@ -1,79 +1,28 @@
 
 import Grid from './Grid.js';
 import Tile from './Tile.js';
-import { moveUp, moveDown, moveLeft, moveRight, canMoveUp, canMoveDown, canMoveLeft, canMoveRight } from './Actions.js'
-import handleLose from './handleLose.js';
+import StartAction from './StartAction.js';
 
 const gameBoard = document.getElementById("game-board")
-const score = document.getElementById('number-score')
-
-var numberScore = 0
-var numberHighScore = 0
 
 const grid = new Grid(gameBoard)
 grid.randomEmptyCell().tile = new Tile(gameBoard)
 grid.randomEmptyCell().tile = new Tile(gameBoard)
 
-setupInput()
+const modalHowToPlay = document.getElementById("modal-howtoplay")
+const howToPlayBtn = document.getElementById("howtoplay-btn")
+const closeModalHowToPlay = document.getElementById("modal-close-howtoplay")
 
-function setupInput() {
-    window.addEventListener("keydown", handleInput, { once: true })
+// Bắt đầu lắng nghe Action và sử lý
+
+StartAction(grid, gameBoard)
+
+// Handle how to play
+
+howToPlayBtn.onclick = function () {
+    modalHowToPlay.classList.add('active')
 }
 
-
-async function handleInput(e) {
-    switch (e.key) {
-        case "ArrowUp":
-            if (!canMoveUp(grid)) {
-                setupInput()
-                return
-            }
-            await moveUp(grid)
-            break
-        case "ArrowDown":
-            if (!canMoveDown(grid)) {
-                setupInput()
-                return
-            }
-            await moveDown(grid)
-            break
-        case "ArrowLeft":
-            if (!canMoveLeft(grid)) {
-                setupInput()
-                return
-            }
-            await moveLeft(grid)
-            break
-        case "ArrowRight":
-            if (!canMoveRight(grid)) {
-                setupInput()
-                return
-            }
-            await moveRight(grid)
-            break
-        default:
-            setupInput()
-            return
-    }
-
-    grid.cells.forEach(cell => {
-        let scoreMerge = cell.mergeTiles()
-        numberScore = scoreMerge ? scoreMerge + numberScore : numberScore
-        if (numberScore) score.textContent = numberScore.toString()
-    })
-
-    const newTile = new Tile(gameBoard)
-    grid.randomEmptyCell().tile = newTile
-
-    if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
-        newTile.waitForTransition(true).then(() => {
-            handleLose(grid, gameBoard, numberScore, numberHighScore, setupInput)
-            numberScore = 0
-        }
-        )
-        return
-    }
-
-    setupInput()
-
+closeModalHowToPlay.onclick = function () {
+    modalHowToPlay.classList.remove('active')
 }
