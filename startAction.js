@@ -160,6 +160,7 @@ function StartAction(grid, gameBoard) {
         if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
             newTile.waitForTransition(true).then(() => {
                 handleLose(grid, gameBoard, numberScore, numberHighScore, setupInput)
+                numberScore = 0
             }
             )
             return
