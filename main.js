@@ -5,10 +5,7 @@ import { moveUp, moveDown, moveLeft, moveRight, canMoveUp, canMoveDown, canMoveL
 import handleLose from './handleLose.js';
 
 const gameBoard = document.getElementById("game-board")
-const modal = document.getElementById('modal')
 const score = document.getElementById('number-score')
-const modalClose = document.getElementById('modal-close')
-const playAgain = document.getElementById('play-again')
 
 var numberScore = 0
 var numberHighScore = 0
@@ -21,8 +18,6 @@ setupInput()
 
 function setupInput() {
     window.addEventListener("keydown", handleInput, { once: true })
-    modalClose.addEventListener("click", closeModal)
-    playAgain.addEventListener("click", handlePlayAgain)
 }
 
 
@@ -64,31 +59,21 @@ async function handleInput(e) {
     grid.cells.forEach(cell => {
         let scoreMerge = cell.mergeTiles()
         numberScore = scoreMerge ? scoreMerge + numberScore : numberScore
-        if(numberScore) score.textContent = numberScore.toString()
+        if (numberScore) score.textContent = numberScore.toString()
     })
 
     const newTile = new Tile(gameBoard)
     grid.randomEmptyCell().tile = newTile
 
     if (!canMoveUp(grid) && !canMoveDown(grid) && !canMoveLeft(grid) && !canMoveRight(grid)) {
-        newTile.waitForTransition(true).then(() => handleLose(numberScore, numberHighScore, modal))
+        newTile.waitForTransition(true).then(() => {
+            handleLose(grid, gameBoard, numberScore, numberHighScore, setupInput)
+            numberScore = 0
+        }
+        )
         return
     }
 
     setupInput()
 
-}
-
-function closeModal() {
-    modal.classList.remove('active')
-}
-
-function handlePlayAgain() {
-    grid.resetTile()
-    grid.randomEmptyCell().tile = new Tile(gameBoard)
-    grid.randomEmptyCell().tile = new Tile(gameBoard)
-    modal.classList.remove('active')
-    numberScore = 0
-    score.textContent = numberScore.toString()
-    setupInput()
 }
